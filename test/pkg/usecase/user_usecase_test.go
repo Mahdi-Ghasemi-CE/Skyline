@@ -2,9 +2,9 @@ package usecase
 
 import (
 	"Skyline/internal/utils"
-	"Skyline/pkg/models/user-models"
-	"Skyline/pkg/repository/user-repository"
-	"Skyline/pkg/usecases/user-usecase"
+	user_models "Skyline/pkg/models/user-models"
+	user_repository "Skyline/pkg/repository/user-repository"
+	user_usecase "Skyline/pkg/usecases/user-usecase"
 	"github.com/stretchr/testify/require"
 	"testing"
 )
@@ -12,7 +12,6 @@ import (
 func TestCreateUser(t *testing.T) {
 	// CASE 1
 	utils.SetDatabaseConnectionForTest("../../../internal/configs")
-
 	userRepository := user_repository.NewUserRepository()
 	//	roleRepository := role.NewRoleRepository(db)
 	userService := user_usecase.NewUserUsecase(userRepository)
