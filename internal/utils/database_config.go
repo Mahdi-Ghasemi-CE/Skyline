@@ -1,6 +1,7 @@
-package database
+package utils
 
 import (
+	"Skyline/pkg/models"
 	"gorm.io/driver/postgres"
 	_ "gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -19,5 +20,5 @@ func InitDB(connection string) error {
 }
 
 func AutoMigrate() {
-	DB.AutoMigrate()
+	DB.AutoMigrate(&models.User{})
 }
