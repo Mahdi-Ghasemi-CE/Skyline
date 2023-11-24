@@ -3,7 +3,7 @@ package user_usecase
 import (
 	"Skyline/internal/customErrors"
 	"Skyline/internal/utils"
-	"Skyline/pkg/models"
+	"Skyline/pkg/models/user-models"
 	user_repository "Skyline/pkg/repository/user-repository"
 	"gorm.io/gorm"
 	"time"
@@ -21,7 +21,7 @@ func NewUserUsecase(userRepository user_repository.UserRepositoryInterface) User
 	}
 }
 
-func (service userUsecase) Create(userRequest *models.UserRequest) (*models.UserResponse, error) {
+func (service userUsecase) Create(userRequest *user_models.UserRequest) (*user_models.UserResponse, error) {
 	var err error
 
 	isDuplicate, err := service.userRepository.IsExist(userRequest.Email)
@@ -41,7 +41,7 @@ func (service userUsecase) Create(userRequest *models.UserRequest) (*models.User
 		return nil, err
 	}*/
 
-	user := &models.User{
+	user := &user_models.User{
 		FirstName: userRequest.FirstName,
 		LastName:  userRequest.LastName,
 		Email:     userRequest.Email,
@@ -50,7 +50,7 @@ func (service userUsecase) Create(userRequest *models.UserRequest) (*models.User
 		CreatedAt: time.Now(),
 	}
 	response, _ := service.userRepository.Create(user)
-	userResponse := &models.UserResponse{
+	userResponse := &user_models.UserResponse{
 		FirstName: response.FirstName,
 		LastName:  response.LastName,
 		Email:     response.Email,
@@ -60,7 +60,7 @@ func (service userUsecase) Create(userRequest *models.UserRequest) (*models.User
 	return userResponse, nil
 }
 
-func (service userUsecase) Update(userRequest *models.UserRequest) (*models.UserResponse, error) {
+func (service userUsecase) Update(userRequest *user_models.UserRequest) (*user_models.UserResponse, error) {
 	var err error
 
 	isDuplicate, err := service.userRepository.IsExist(userRequest.Email)
@@ -75,14 +75,14 @@ func (service userUsecase) Update(userRequest *models.UserRequest) (*models.User
 	if err != nil {
 		return nil, err
 	}
-	user := &models.User{
+	user := &user_models.User{
 		FirstName: userRequest.FirstName,
 		LastName:  userRequest.LastName,
 		Email:     userRequest.Email,
 		Password:  userRequest.Password,
 	}
 	response, _ := service.userRepository.Update(user)
-	userResponse := &models.UserResponse{
+	userResponse := &user_models.UserResponse{
 		FirstName: response.FirstName,
 		LastName:  response.LastName,
 		Email:     response.Email,
@@ -92,13 +92,13 @@ func (service userUsecase) Update(userRequest *models.UserRequest) (*models.User
 	return userResponse, nil
 }
 
-func (service userUsecase) Get(id int) (*models.UserResponse, error) {
+func (service userUsecase) Get(id int) (*user_models.UserResponse, error) {
 	response, err := service.userRepository.Get(id)
 	if err != nil {
 		return nil, err
 	}
 
-	userResponse := &models.UserResponse{
+	userResponse := &user_models.UserResponse{
 		FirstName: response.FirstName,
 		LastName:  response.LastName,
 		Email:     response.Email,

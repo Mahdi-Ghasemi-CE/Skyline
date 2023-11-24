@@ -2,7 +2,7 @@ package repository
 
 import (
 	"Skyline/internal/utils"
-	"Skyline/pkg/models"
+	"Skyline/pkg/models/user-models"
 	user_repository "Skyline/pkg/repository/user-repository"
 	"github.com/stretchr/testify/require"
 	"testing"
@@ -16,7 +16,7 @@ func TestCRUDUserRepository(t *testing.T) {
 	password, err := utils.HashPassword(utils.RandomString(10))
 	require.NoError(t, err)
 
-	arg := &models.User{
+	arg := &user_models.User{
 		FirstName: utils.RandomString(6),
 		LastName:  utils.RandomString(6),
 		Email:     utils.RandomEmail(),
@@ -95,7 +95,7 @@ func TestIsExistUserRepository(t *testing.T) {
 	password, err := utils.HashPassword(utils.RandomString(10))
 	require.NoError(t, err)
 
-	arg := &models.User{
+	arg := &user_models.User{
 		FirstName: utils.RandomString(6),
 		LastName:  utils.RandomString(6),
 		Email:     utils.RandomEmail(),

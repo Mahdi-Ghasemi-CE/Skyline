@@ -2,7 +2,7 @@ package usecase
 
 import (
 	"Skyline/internal/utils"
-	"Skyline/pkg/models"
+	"Skyline/pkg/models/user-models"
 	"Skyline/pkg/repository/user-repository"
 	"Skyline/pkg/usecases/user-usecase"
 	"github.com/stretchr/testify/require"
@@ -18,7 +18,7 @@ func TestCreateUser(t *testing.T) {
 	userService := user_usecase.NewUserUsecase(userRepository)
 
 	password, err := utils.HashPassword(utils.RandomString(10))
-	arg := models.UserRequest{
+	arg := user_models.UserRequest{
 		FirstName:  utils.RandomString(6),
 		LastName:   utils.RandomString(6),
 		Email:      utils.RandomEmail(),

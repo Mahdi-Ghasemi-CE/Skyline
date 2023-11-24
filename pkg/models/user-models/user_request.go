@@ -1,4 +1,4 @@
-package models
+package user_models
 
 type UserRequest struct {
 	FirstName  string `json:"firstName" validate:"required"`
