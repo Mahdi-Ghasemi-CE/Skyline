@@ -3,22 +3,16 @@ package repository
 import (
 	"Skyline/internal/utils"
 	"Skyline/pkg/models"
-	"Skyline/pkg/repository/user"
-	"fmt"
+	user_repository "Skyline/pkg/repository/user-repository"
 	"github.com/stretchr/testify/require"
 	"testing"
 	"time"
 )
 
 func TestCRUDUserRepository(t *testing.T) {
-	fmt.Println("Hello World ")
-	err := utils.InitDB("host=localhost user=root password=secret dbname=Skyline port=5432 sslmode=disable")
-	if err != nil {
-		panic("Cannot connected to the database!")
-	}
-
 	// CASE 0 initialize
-	userRepository := user.NewUserRepository()
+	utils.SetDatabaseConnectionForTest("../../../internal/configs")
+	userRepository := user_repository.NewUserRepository()
 	password, err := utils.HashPassword(utils.RandomString(10))
 	require.NoError(t, err)
 
@@ -97,7 +91,7 @@ func TestCRUDUserRepository(t *testing.T) {
 
 func TestIsExistUserRepository(t *testing.T) {
 	// CASE 0 initialize
-	userRepository := user.NewUserRepository()
+	userRepository := user_repository.NewUserRepository()
 	password, err := utils.HashPassword(utils.RandomString(10))
 	require.NoError(t, err)
 

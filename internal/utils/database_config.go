@@ -22,3 +22,17 @@ func InitDB(connection string) error {
 func AutoMigrate() {
 	DB.AutoMigrate(&models.User{})
 }
+
+func SetDatabaseConnectionForTest(path string) error {
+	appConfig, err := LoadAppConfig(path)
+	if err != nil {
+		panic(err)
+	}
+
+	DB, err = gorm.Open(postgres.Open(appConfig.DbConnection), &gorm.Config{})
+	if err != nil {
+		panic("Database isn't connected.")
+	}
+	AutoMigrate()
+	return err
+}
