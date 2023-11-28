@@ -4,9 +4,9 @@ Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 package main
 
 import (
-	"Skyline/cmd/skyline"
+	"Skyline/cmd"
 )
 
 func main() {
-	skyline.Execute()
+	cmd.Execute()
 }

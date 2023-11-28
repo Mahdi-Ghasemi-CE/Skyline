@@ -1,4 +1,4 @@
-package skyline
+package cmd
 
 import (
 	"Skyline/internal/utils"
