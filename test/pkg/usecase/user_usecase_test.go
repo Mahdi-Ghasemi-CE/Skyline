@@ -4,7 +4,7 @@ import (
 	"Skyline/internal/utils"
 	user_models "Skyline/pkg/models/user-models"
 	user_repository "Skyline/pkg/repository/user-repository"
-	user_usecase "Skyline/pkg/usecases/user-usecase"
+	user_usecase "Skyline/pkg/usecases/user_usecase"
 	"github.com/stretchr/testify/require"
 	"testing"
 )
