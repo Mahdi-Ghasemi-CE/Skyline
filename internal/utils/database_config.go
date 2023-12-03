@@ -2,6 +2,7 @@ package utils
 
 import (
 	"Skyline/pkg/models/role_models"
+	"Skyline/pkg/models/session_models"
 	"Skyline/pkg/models/user-models"
 	"gorm.io/driver/postgres"
 	_ "gorm.io/driver/postgres"
@@ -21,7 +22,7 @@ func InitDB(connection string) error {
 }
 
 func AutoMigrate() {
-	DB.AutoMigrate(&user_models.User{}, &role_models.Role{})
+	DB.AutoMigrate(&user_models.User{}, &role_models.Role{}, &session_models.Session{})
 }
 
 func SetDatabaseConnectionForTest(path string) error {

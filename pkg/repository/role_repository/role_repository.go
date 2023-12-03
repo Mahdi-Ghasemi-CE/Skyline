@@ -10,7 +10,7 @@ type roleRepository struct {
 	database *gorm.DB
 }
 
-func NewRoleRepository(db *gorm.DB) RoleRepositoryInterface {
+func NewRoleRepository() RoleRepositoryInterface {
 	return &roleRepository{
 		database: utils.DB,
 	}

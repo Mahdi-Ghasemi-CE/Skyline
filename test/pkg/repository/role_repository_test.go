@@ -12,7 +12,7 @@ func TestCRUDRole(t *testing.T) {
 	utils.SetDatabaseConnectionForTest("../../../internal/configs")
 
 	// CASE 0 initialize
-	roleRepository := role_repository.NewRoleRepository(utils.DB)
+	roleRepository := role_repository.NewRoleRepository()
 	arg := &role_models.Role{
 		RoleId:       utils.RandomInt(2, 1000),
 		Title:        utils.RandomString(5),
