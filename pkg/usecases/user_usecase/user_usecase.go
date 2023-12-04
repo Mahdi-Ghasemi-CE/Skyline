@@ -1,7 +1,7 @@
 package user_usecase
 
 import (
-	"Skyline/internal/customErrors"
+	custom_errors "Skyline/internal/custom-errors"
 	"Skyline/internal/utils"
 	"Skyline/pkg/models/user-models"
 	user_repository "Skyline/pkg/repository/user-repository"
@@ -29,7 +29,7 @@ func (service userUsecase) Create(userRequest *user_models.UserRequest) (*user_m
 		return nil, err
 	}
 	if isDuplicate {
-		return nil, customErrors.DuplicateDataError("email")
+		return nil, custom_errors.DuplicateDataError("email")
 	}
 
 	userRequest.Password, err = utils.HashPassword(userRequest.Password)
@@ -68,7 +68,7 @@ func (service userUsecase) Update(userRequest *user_models.UserRequest) (*user_m
 		return nil, err
 	}
 	if isDuplicate {
-		return nil, customErrors.DuplicateDataError("email")
+		return nil, custom_errors.DuplicateDataError("email")
 	}
 
 	userRequest.Password, err = utils.HashPassword(userRequest.Password)
