@@ -9,4 +9,5 @@ type User struct {
 	Email     string `gorm:"uniqueIndex"`
 	Password  string
 	CreatedAt time.Time
+	RoleId    int `gorm:"foreignKey:RoleId"`
 }

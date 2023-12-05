@@ -4,27 +4,26 @@ import (
 	custom_errors "Skyline/internal/custom-errors"
 	"Skyline/internal/utils"
 	"Skyline/pkg/models/user-models"
+	"Skyline/pkg/repository/role_repository"
 	user_repository "Skyline/pkg/repository/user-repository"
-	"gorm.io/gorm"
+	"fmt"
 	"time"
 )
 
 type userUsecase struct {
 	userRepository user_repository.UserRepositoryInterface
-	database       *gorm.DB
+	roleRepository role_repository.RoleRepositoryInterface
 }
 
-func NewUserUsecase(userRepository user_repository.UserRepositoryInterface) UserUsecaseInterface {
+func NewUserUsecase(userRepository user_repository.UserRepositoryInterface, roleRepository role_repository.RoleRepositoryInterface) UserUsecaseInterface {
 	return &userUsecase{
 		userRepository: userRepository,
-		database:       utils.DB,
+		roleRepository: roleRepository,
 	}
 }
 
-func (service userUsecase) Create(userRequest *user_models.UserRequest) (*user_models.UserResponse, error) {
-	var err error
-
-	isDuplicate, err := service.userRepository.IsExist(userRequest.Email)
+func (usecase userUsecase) Create(userRequest *user_models.UserRequest) (*user_models.UserResponse, error) {
+	isDuplicate, err := usecase.userRepository.IsExist(userRequest.Email)
 	if err != nil {
 		return nil, err
 	}
@@ -36,38 +35,41 @@ func (service userUsecase) Create(userRequest *user_models.UserRequest) (*user_m
 	if err != nil {
 		return nil, err
 	}
-	/*role, err := service.roleRepository.GetByTitle("Customer")
+	role, err := usecase.roleRepository.GetByTitle("Customer")
 	if err != nil {
 		return nil, err
-	}*/
+	}
 
 	user := &user_models.User{
 		FirstName: userRequest.FirstName,
 		LastName:  userRequest.LastName,
 		Email:     userRequest.Email,
 		Password:  userRequest.Password,
-		//RoleId:    role.RoleId,
+		RoleId:    role.RoleId,
 		CreatedAt: time.Now(),
 	}
-	response, _ := service.userRepository.Create(user)
+	response, _ := usecase.userRepository.Create(user)
 	userResponse := &user_models.UserResponse{
 		FirstName: response.FirstName,
 		LastName:  response.LastName,
 		Email:     response.Email,
-		//RoleId:    response.RoleId,
+		RoleId:    response.RoleId,
 	}
 
 	return userResponse, nil
 }
 
-func (service userUsecase) Update(userRequest *user_models.UserRequest) (*user_models.UserResponse, error) {
-	var err error
-
-	isDuplicate, err := service.userRepository.IsExist(userRequest.Email)
+func (usecase userUsecase) Update(userRequest *user_models.UpdateUserRequest) (*user_models.UserResponse, error) {
+	isDuplicate, err := usecase.userRepository.IsExist(userRequest.Email)
 	if err != nil {
 		return nil, err
 	}
-	if isDuplicate {
+	user, err := usecase.userRepository.Get(userRequest.UserId)
+	if err != nil {
+		return nil, err
+	}
+	if isDuplicate && user.Email != userRequest.Email {
+		fmt.Println(custom_errors.DuplicateDataError("email"))
 		return nil, custom_errors.DuplicateDataError("email")
 	}
 
@@ -75,41 +77,56 @@ func (service userUsecase) Update(userRequest *user_models.UserRequest) (*user_m
 	if err != nil {
 		return nil, err
 	}
-	user := &user_models.User{
-		FirstName: userRequest.FirstName,
-		LastName:  userRequest.LastName,
-		Email:     userRequest.Email,
-		Password:  userRequest.Password,
-	}
-	response, _ := service.userRepository.Update(user)
-	userResponse := &user_models.UserResponse{
-		FirstName: response.FirstName,
-		LastName:  response.LastName,
-		Email:     response.Email,
-		//RoleId:    response.RoleId,
-	}
+	user = mapUpdateUserRequestToUser(userRequest)
+	response, _ := usecase.userRepository.Update(user)
+	userResponse := mapUserToUserResponse(response)
 
 	return userResponse, nil
 }
 
-func (service userUsecase) Get(id int) (*user_models.UserResponse, error) {
-	response, err := service.userRepository.Get(id)
+func mapUserToUserResponse(response *user_models.User) *user_models.UserResponse {
+	userResponse := &user_models.UserResponse{
+		UserId:    response.UserId,
+		FirstName: response.FirstName,
+		LastName:  response.LastName,
+		Email:     response.Email,
+		RoleId:    response.RoleId,
+	}
+	return userResponse
+}
+
+func mapUpdateUserRequestToUser(updateUserRequest *user_models.UpdateUserRequest) *user_models.User {
+	user := &user_models.User{
+		UserId:    updateUserRequest.UserId,
+		FirstName: updateUserRequest.FirstName,
+		LastName:  updateUserRequest.LastName,
+		Email:     updateUserRequest.Email,
+		Password:  updateUserRequest.Password,
+	}
+	return user
+}
+
+func (usecase userUsecase) Get(id int) (*user_models.UserResponse, error) {
+	response, err := usecase.userRepository.Get(id)
 	if err != nil {
 		return nil, err
 	}
-
+	if response.UserId == 0 {
+		return &user_models.UserResponse{}, nil
+	}
 	userResponse := &user_models.UserResponse{
+		UserId:    response.UserId,
 		FirstName: response.FirstName,
 		LastName:  response.LastName,
 		Email:     response.Email,
-		//RoleId:    response.RoleId,
+		RoleId:    response.RoleId,
 	}
 
 	return userResponse, nil
 }
 
-func (service userUsecase) Delete(id int) (bool, error) {
-	response, err := service.userRepository.Delete(id)
+func (usecase userUsecase) Delete(id int) (bool, error) {
+	response, err := usecase.userRepository.Delete(id)
 	if err != nil {
 		return response, err
 	}

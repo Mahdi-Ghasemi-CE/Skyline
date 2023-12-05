@@ -3,6 +3,7 @@ package usecase
 import (
 	"Skyline/internal/utils"
 	user_models "Skyline/pkg/models/user-models"
+	"Skyline/pkg/repository/role_repository"
 	user_repository "Skyline/pkg/repository/user-repository"
 	user_usecase "Skyline/pkg/usecases/user_usecase"
 	"github.com/stretchr/testify/require"
@@ -13,8 +14,8 @@ func TestCreateUser(t *testing.T) {
 	// CASE 1
 	utils.SetDatabaseConnectionForTest("../../../internal/configs")
 	userRepository := user_repository.NewUserRepository()
-	//	roleRepository := role.NewRoleRepository(db)
-	userService := user_usecase.NewUserUsecase(userRepository)
+	roleRepository := role_repository.NewRoleRepository()
+	userService := user_usecase.NewUserUsecase(userRepository, roleRepository)
 
 	password, err := utils.HashPassword(utils.RandomString(10))
 	arg := user_models.UserRequest{
@@ -36,4 +37,5 @@ func TestCreateUser(t *testing.T) {
 	require.Equal(t, arg.FirstName, user.FirstName)
 	require.Equal(t, arg.LastName, user.LastName)
 	require.Equal(t, arg.Email, user.Email)
+	require.NotNil(t, user.RoleId)
 }
