@@ -1,10 +1,12 @@
 package cmd
 
 import (
+	"Skyline/api/http/route"
 	"Skyline/internal/utils"
-	"fmt"
+	"github.com/gin-gonic/gin"
 	"github.com/spf13/cobra"
 	"os"
+	"time"
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -15,7 +17,6 @@ var rootCmd = &cobra.Command{
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println(args)
 		appSetting, err := utils.LoadAppConfig("./internal/configs")
 		if err != nil {
 			panic("AppSetting cannot be loaded !")
@@ -25,6 +26,12 @@ var rootCmd = &cobra.Command{
 		if err != nil {
 			panic("Cannot connected to the database!")
 		}
+
+		timeout := time.Duration(appSetting.ContextTimeout) * time.Second
+		gin.SetMode(gin.ReleaseMode)
+		router := gin.Default()
+		route.Setup(timeout, router)
+		router.Run(appSetting.HTTPServerAddress)
 	},
 }
 
