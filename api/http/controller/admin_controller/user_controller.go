@@ -1,4 +1,4 @@
-package controller
+package admin_controller
 
 import (
 	custom_errors "Skyline/internal/custom-errors"
@@ -14,12 +14,12 @@ import (
 
 type UserController struct {
 	UserUsecase    user_usecase.UserUsecaseInterface
-	contextTimeout time.Duration
+	ContextTimeout time.Duration
 }
 
 func (controller *UserController) Create(ginContext *gin.Context) {
 	var request user_models.UserRequest
-	_, cancel := context.WithTimeout(ginContext, controller.contextTimeout)
+	_, cancel := context.WithTimeout(ginContext, controller.ContextTimeout)
 	defer cancel()
 
 	err := ginContext.ShouldBind(&request)
@@ -50,7 +50,7 @@ func (controller *UserController) Create(ginContext *gin.Context) {
 }
 
 func (controller *UserController) Get(ginContext *gin.Context) {
-	_, cancel := context.WithTimeout(ginContext, controller.contextTimeout)
+	_, cancel := context.WithTimeout(ginContext, controller.ContextTimeout)
 	defer cancel()
 
 	param := ginContext.Param("userId")
@@ -82,7 +82,7 @@ func (controller *UserController) Get(ginContext *gin.Context) {
 
 func (controller *UserController) Update(ginContext *gin.Context) {
 	var request user_models.UpdateUserRequest
-	_, cancel := context.WithTimeout(ginContext, controller.contextTimeout)
+	_, cancel := context.WithTimeout(ginContext, controller.ContextTimeout)
 	defer cancel()
 
 	err := ginContext.ShouldBind(&request)
@@ -114,7 +114,7 @@ func (controller *UserController) Update(ginContext *gin.Context) {
 }
 
 func (controller *UserController) Delete(ginContext *gin.Context) {
-	_, cancel := context.WithTimeout(ginContext, controller.contextTimeout)
+	_, cancel := context.WithTimeout(ginContext, controller.ContextTimeout)
 	defer cancel()
 
 	param := ginContext.Param("userId")
