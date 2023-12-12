@@ -54,16 +54,7 @@ func (usecase accountUsecase) Login(loginRequest *user_models.LoginRequest, Clie
 		return nil, err
 	}
 
-	session := &session_models.Session{
-		UserId:       user.UserId,
-		RefreshToken: refreshToken,
-		UserAgent:    UserAgent,
-		ClientIp:     ClientIp,
-		IsBlocked:    false,
-		ExpiresAt:    refreshExpiredAt,
-		CreatedAt:    time.Now(),
-	}
-	_, err = usecase.sessionRepository.Create(session)
+	err = usecase.handleSession(err, user, refreshToken, UserAgent, ClientIp, refreshExpiredAt)
 	if err != nil {
 		return nil, err
 	}
@@ -73,6 +64,34 @@ func (usecase accountUsecase) Login(loginRequest *user_models.LoginRequest, Clie
 		RefreshToken: refreshToken,
 	}
 	return response, err
+}
+
+func (usecase accountUsecase) handleSession(err error, user *user_models.User, refreshToken string, UserAgent string, ClientIp string, refreshExpiredAt time.Time) error {
+	oldSession, err := usecase.sessionRepository.GetByUserId(user.UserId)
+	if err != nil {
+		return err
+	}
+
+	oldSession.IsBlocked = true
+	_, err = usecase.sessionRepository.Update(oldSession)
+	if err != nil {
+		return err
+	}
+
+	newSession := &session_models.Session{
+		UserId:       user.UserId,
+		RefreshToken: refreshToken,
+		UserAgent:    UserAgent,
+		ClientIp:     ClientIp,
+		IsBlocked:    false,
+		ExpiresAt:    refreshExpiredAt,
+		CreatedAt:    time.Now(),
+	}
+	_, err = usecase.sessionRepository.Create(newSession)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (usecase accountUsecase) createAccessToken(user *user_models.User) (string, error) {

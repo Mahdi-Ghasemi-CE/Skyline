@@ -39,6 +39,14 @@ func (repository sessionRepository) Get(id int) (*session_models.Session, error)
 	return &session, nil
 }
 
+func (repository sessionRepository) GetByUserId(userId int) (*session_models.Session, error) {
+	var session session_models.Session
+	if err := repository.database.Where("user_id = ?", userId).Find(&session).Error; err != nil {
+		return nil, err
+	}
+	return &session, nil
+}
+
 func (repository sessionRepository) IsExist(userId int) (bool, error) {
 	var session session_models.Session
 	if err :=
