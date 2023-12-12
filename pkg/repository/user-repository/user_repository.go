@@ -3,7 +3,6 @@ package user_repository
 import (
 	"Skyline/internal/utils"
 	"Skyline/pkg/models/user-models"
-	"fmt"
 	"gorm.io/gorm"
 )
 
@@ -18,8 +17,6 @@ func NewUserRepository() UserRepositoryInterface {
 }
 
 func (repository userRepository) Create(user *user_models.User) (*user_models.User, error) {
-	fmt.Println(user)
-
 	if err := repository.database.Create(&user).Error; err != nil {
 		return nil, err
 	}
