@@ -1,6 +1,7 @@
 package route
 
 import (
+	"Skyline/api/http/middleware"
 	"Skyline/api/http/route/admin"
 	"Skyline/api/http/route/public"
 	"github.com/gin-gonic/gin"
@@ -12,6 +13,7 @@ func Setup(timeout time.Duration, gin *gin.Engine) {
 
 	//	All Admin APIs
 	adminRouter := version1.Group("Admin")
+	adminRouter.Use(middleware.Authentication())
 	admin.NewUserAdminRouter(timeout, adminRouter)
 
 	//	All public_controller APIs

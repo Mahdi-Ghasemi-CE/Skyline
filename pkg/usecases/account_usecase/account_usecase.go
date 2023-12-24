@@ -10,9 +10,11 @@ import (
 	"Skyline/pkg/usecases/user_usecase"
 	"errors"
 	"fmt"
-	"github.com/golang-jwt/jwt/v5"
+	"github.com/dgrijalva/jwt-go"
 	"time"
 )
+
+var jwtKey = []byte("supersecretkey")
 
 type accountUsecase struct {
 	userUsecase       user_usecase.UserUsecaseInterface
@@ -99,15 +101,29 @@ func (usecase accountUsecase) createAccessToken(user *user_models.User) (string,
 	if err != nil {
 		return "", err
 	}
-	token := jwt.New(jwt.SigningMethodHS256)
-	claims := token.Claims.(jwt.MapClaims)
-	claims["UserId"] = user.UserId
-	claims["Email"] = user.Email
-	claims["RoleName"] = role.Title
-	claims["CreatedAt"] = time.Now()
-	claims["ExpiredAt"] = time.Now().Add(time.Minute * time.Duration(utils.AppConfig.AccessTokenDuration))
 
-	tokenString, err := token.SignedString([]byte(utils.AppConfig.AccessTokenSecret))
+	expirationTime := time.Now().Add(1 * time.Hour)
+	claims := &utils.JWTClaim{
+		UserId: user.UserId,
+		Role:   role.Title,
+		Email:  user.Email,
+		StandardClaims: jwt.StandardClaims{
+			IssuedAt:  time.Now().Unix(),
+			ExpiresAt: expirationTime.Unix(),
+		},
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenString, err := token.SignedString(jwtKey)
+	//
+	//token := jwt.New(jwt.SigningMethodHS256)
+	//claims := token.Claims.(jwt.MapClaims)
+	//claims["UserId"] = user.UserId
+	//claims["Email"] = user.Email
+	//claims["RoleName"] = role.Title
+	//claims["CreatedAt"] = time.Now()
+	//claims["ExpiredAt"] = time.Now().Add(time.Minute * time.Duration(utils.AppConfig.AccessTokenDuration))
+	//
+	//tokenString, err := token.SignedString([]byte(utils.AppConfig.AccessTokenSecret))
 	if err != nil {
 		return "", err
 	}
@@ -163,4 +179,38 @@ func (usecase accountUsecase) ForgetPassword(email string) (bool, error) {
 		return false, err
 	}
 	return true, nil
+}
+
+func IsAuthorized(requestToken string, secret string) (bool, error) {
+	_, err := jwt.Parse(requestToken, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+		}
+		return []byte(secret), nil
+	})
+	if err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
+func ExtractIDFromToken(requestToken string, secret string) (string, error) {
+	token, err := jwt.Parse(requestToken, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+		}
+		return []byte(secret), nil
+	})
+
+	if err != nil {
+		return "", err
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+
+	if !ok && !token.Valid {
+		return "", fmt.Errorf("Invalid Token")
+	}
+
+	return claims["id"].(string), nil
 }

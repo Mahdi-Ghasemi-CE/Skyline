@@ -3,7 +3,6 @@ package session_repository
 import (
 	"Skyline/internal/utils"
 	"Skyline/pkg/models/session_models"
-	"fmt"
 	"gorm.io/gorm"
 )
 
@@ -25,7 +24,12 @@ func (repository sessionRepository) Create(session *session_models.Session) (*se
 }
 
 func (repository sessionRepository) Update(session *session_models.Session) (*session_models.Session, error) {
-	if err := repository.database.Save(&session).Error; err != nil {
+	if err :=
+		repository.
+			database.
+			Where("session_id = ?", session.SessionId).
+			Updates(session_models.Session{IsBlocked: session.IsBlocked}).
+			Error; err != nil {
 		return nil, err
 	}
 	return session, nil
@@ -55,7 +59,6 @@ func (repository sessionRepository) IsExist(userId int) (bool, error) {
 			Where("user_id = ?", userId).
 			Where("is_blocked = ?", false).
 			Find(&session).Error; err != nil {
-		fmt.Println(session)
 		return false, err
 	}
 	if session.SessionId > 0 {
