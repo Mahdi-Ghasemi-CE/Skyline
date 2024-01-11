@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"Skyline/pkg/models/address_models"
 	"Skyline/pkg/models/role_models"
 	"Skyline/pkg/models/session_models"
 	"Skyline/pkg/models/user-models"
@@ -22,7 +23,13 @@ func InitDB(connection string) error {
 }
 
 func AutoMigrate() {
-	DB.AutoMigrate(&user_models.User{}, &role_models.Role{}, &session_models.Session{})
+	DB.AutoMigrate(
+		&user_models.User{},
+		&role_models.Role{},
+		&session_models.Session{},
+		&address_models.Country{},
+		&address_models.City{},
+		&address_models.Continent{})
 }
 
 func SetDatabaseConnectionForTest(path string) error {

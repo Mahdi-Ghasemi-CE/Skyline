@@ -24,9 +24,15 @@ func NewAccountRouter(timeout time.Duration, router *gin.RouterGroup) {
 		AccountUsecase: accountUsecase,
 		UserUsecase:    userUsecase,
 	}
+	//cityController := &public_controller.CityController{
+	//	ContextTimeout: timeout,
+	//}
 	userGroup := router.Group("Account")
 	userGroup.POST("/Login", accountController.Login)
 	userGroup.POST("/SignUp", accountController.SignUp)
 	userGroup.GET("/Verify/:email/:verifyCode", accountController.Verify)
 	userGroup.GET("/ForgetPassword/:email", accountController.ForgetPassword)
+	//userGroup.POST("/City", cityController.City)
+	//userGroup.POST("/Country", cityController.Country)
+	//userGroup.POST("/Continents", cityController.Continents)
 }
